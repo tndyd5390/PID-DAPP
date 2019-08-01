@@ -25,11 +25,12 @@ _registerUser = async(user, affiliation) =>{
 
 
 
-router.get('/createUser', async function(req, res, next) {
-    var user = 'user19';
+router.post('/createUser', async function(req, res, next) {
+    var {body : {id}} = req;
+    console.log(id);
     var affiliation = 'org1.department1'
-    var secret = await _registerUser(user, affiliation);
-    await registerUser.registerUser(user, secret.secret,affiliation);
+    //var secret = await _registerUser(user, affiliation);
+    //await registerUser.registerUser(user, secret.secret,affiliation);
 });
 
 module.exports = router;
