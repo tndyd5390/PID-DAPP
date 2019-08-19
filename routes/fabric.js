@@ -3,12 +3,13 @@ var router = express.Router();
 var registerUser = require('../fabricSDK/user/registerUser');
 const fetch = require('node-fetch');
 
-_registerUser = async(user, affiliation) =>{
+_registerUser = async(email, password,affiliation) =>{
     const params = {
-        user : user,
+        email : email,
+        password : password,
         affiliation : affiliation
     };
-    var result = await fetch('http://192.168.40.128:3000/fabric/registerUser', {
+    var result = await fetch('http://192.168.40.129:3000/users/registerUser', {
         method : 'post',
         headers : {
             Accept: 'application/json',
@@ -24,16 +25,11 @@ _registerUser = async(user, affiliation) =>{
 };
 
 router.post('/createUser', async(req, res, next)=>{
-    var {body : {id}} = req;
-    console.log(id);
+    var {body : {email, password}} = req;
     var affiliation = 'org1.department1'
-    var result = await _registerUser(id, affiliation);
-    if(result.already){
-        res.render('redirect', {msg : '이미 존재하는 ID입니다', url : '/register'});
-    }else{
-        await registerUser.registerUser(id, result.secret);
-        res.render('redirect', {msg : '가입완료', url : '/login'});
-    }
+    var result = await _registerUser(email, password, affiliation);
+    await registerUser.registerUser(email, result.secret);
+    res.render('redirect', {msg : '가입완료', url : '/login'});
 });
 
 router.post('/loginProc', async(req, res)=>{
