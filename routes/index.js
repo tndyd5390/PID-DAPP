@@ -3,11 +3,21 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+    var session = req.session;
+    console.log(session);
+    if(session==null || session==''){
+        res.render('redirect', {msg : '로그인 정보를 확인해주세요.', url:'/login'})
+    }else{
+        res.render('index', { title: 'Express' });
+    }
 });
 
 router.get('/login', (req, res)=>{
-  res.render('login');
+    res.render('login');
+})
+
+router.get('/register', (req, res)=>{
+    res.render('register');
 })
 
 module.exports = router;

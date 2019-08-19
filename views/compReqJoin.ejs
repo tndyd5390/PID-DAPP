@@ -82,13 +82,13 @@
                 return;
             } 
 
-            if(f.compRegistrationNumber.value == "") {
-                _alertAndFocus("사업자등록번호를 입력해주세요.", f.compRegistrationNumber);
+            if(f.companyRegistrationNumber.value == "") {
+                _alertAndFocus("사업자등록번호를 입력해주세요.", f.companyRegistrationNumber);
                 return;
             }
 
-            if(f.repreName.value == "") {
-                _alertAndFocus("대표자 명을 입력해주세요.", f.repreName)
+            if(f.companyRepresentativeName.value == "") {
+                _alertAndFocus("대표자 명을 입력해주세요.", f.companyRepresentativeName)
                 return;
             }
 
@@ -106,7 +106,6 @@
                 _alertAndFocus("비밀번호 확인을 입력해주세요.", f.chkPassword);
                 return;
             }
-
             if(f.companyPostCode.value == "") {
                 _alertAndFocus("우편번호를 입력해주세요.", f.companyPostCode);
                 return;
@@ -121,9 +120,9 @@
                 _alertAndFocus("상세 주소를 입력해주세요.");
                 return;
             }
-
+            f.address.value="asdf"
+            
             f.submit();
-
         }
     </script>
     <!-- Page Wrapper -->
@@ -486,13 +485,13 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control form-control-user"
-                                                id="compRegistrationNumber" name="compRegistrationNumber" placeholder="사업자등록번호">
+                                                id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
-                                            <input type="text" class="form-control form-control-user" id="repreName"
-                                                name="repreName" placeholder="대표자 명">
+                                            <input type="text" class="form-control form-control-user" id="companyRepresentativeName"
+                                                name="companyRepresentativeName" placeholder="대표자 명">
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control form-control-user"
@@ -512,7 +511,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="companyPostCode"
-                                                name="companyPostCode" placeholder="우편번호" disabled="true">
+                                                name="companyPostCode" placeholder="우편번호" readonly="readonly">
                                         </div>
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <a href="javascript:_generateAddress()"
@@ -524,7 +523,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="address"
-                                                name="address" placeholder="주소" disabled="true">
+                                                name="address" placeholder="주소" readonly="readonly">
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control form-control-user"

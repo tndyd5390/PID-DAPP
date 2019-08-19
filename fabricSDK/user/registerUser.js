@@ -28,7 +28,7 @@ const registerUser = async(user, secret)=>{
         var user_from_store = await fabric_client.getUserContext(user, true);
 
         if(user_from_store && user_from_store.isEnrolled()){
-            throw new Error("Already Enrolled");
+            throw new Error("already");
         }else {
             var enrollment = await fabric_ca_client.enroll({enrollmentID: user, enrollmentSecret: secret});
             var enrolledUser = await fabric_client.createUser({
@@ -37,13 +37,17 @@ const registerUser = async(user, secret)=>{
                 cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
             });
             member_user = enrolledUser;
-            return await fabric_client.setUserContext(member_user);
+            await fabric_client.setUserContext(member_user);
+            return 1;
         }
     }catch(err){
-        console.log(err);
+        if(err=='already'){
+            return 1;
+        }else{
+            return 0;
+        }
     }
 }
-
 
 module.exports = {
     registerUser : registerUser
