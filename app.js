@@ -4,6 +4,7 @@ var session = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require("cors");
 //var mariaDB = require('./config/mariaDB');
 
 var indexRouter = require('./routes/index');
@@ -28,6 +29,7 @@ app.use(session({
     resave : false,
     saveUninitialized : true
 }));
+app.use(cors());
 //mariaDB.connect();
 
 app.use('/', indexRouter);
