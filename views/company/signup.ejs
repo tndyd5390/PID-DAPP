@@ -57,10 +57,6 @@
             }).open();
         }
 
-        _onlyNumber = (dom) => {
-            dom.value=dom.value.replace(/[^0-9]/g,'');
-        }
-
         _strEmpty = (str) => {
 	        if (typeof str == "undefined" || str == null || str == "") return true;
 	        else return false;
@@ -106,6 +102,16 @@
             return !pwdReg.test(pwd);
         }
 
+        _checkContactNumberReg = (contactNumber) => {
+            const reg = /^\d{2,3}-\d{3,4}-\d{4}$/;
+            return !reg.test(contactNumber);
+        }
+
+        _checkRegistrationNumber = registrationNumber => {
+            const reg = /^\d{3}-\d{2}-\d{5}$/;
+            return !reg.test(registrationNumber);
+        }
+
         _companyReqJoin = async () => {
             var f = document.getElementById("companyReqForm");
             if(_strEmpty(f.companyName.value)){
@@ -115,6 +121,11 @@
 
             if(_strEmpty(f.companyRegistrationNumber.value)) {
                 _alertAndFocus("사업자등록번호를 입력해주세요.", f.companyRegistrationNumber);
+                return;
+            }
+
+            if(_checkRegistrationNumber(f.companyRegistrationNumber.value)){
+                _alertAndFocus("사업자 등록번호 양식을 확인해주세요. xxx-xx-xxxxx", f.companyRegistrationNumber);
                 return;
             }
 
@@ -152,6 +163,11 @@
                 return;
             }
 
+            if(_strEmpty(f.companyContactNumber.value)){
+                _alertAndFocus("연락처를 입력해주세요.", f.companyContactNumber);
+                return;
+            }
+
             if(f.password.value != f.chkPassword.value){
                 _alertAndFocus("비밀번호가 일치하지 않습니다.", f.chkPassword);
                 return;
@@ -161,7 +177,11 @@
                 _alertAndFocus("비밀번호는 8자 이상 16자 이하의 알파벳, 숫자, 특수문자의 조합이여야 합니다.", f.password);
                 return;
             }
-            
+
+            if(_checkContactNumberReg(f.companyContactNumber.value)){
+                _alertAndFocus("연락처 형식을 확인해 주세요.", f.companyContactNumber);
+                return;
+            }
 
             try{
                 var chkRgiNum = await _checkCompanyRegistrationNumber(f.companyRegistrationNumber.value);
@@ -532,15 +552,14 @@
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4">회사 정보 입력</h1>
                                 </div>
-                                <form class="user" id="companyReqForm" method="POST" action="/company/compReqJoinProc">
+                                <form class="user" id="companyReqForm" method="POST" action="/company">
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user"
                                                 id="companyName" name="companyName" placeholder="회사명">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control form-control-user" onkeyup="javascript:_onlyNumber(this);"
-                                                id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호">
+                                            <input type="text" class="form-control form-control-user" id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호(-포함하여 입력)">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -585,10 +604,19 @@
                                                 id="addressDetail" name="addressDetail" placeholder="상세주소">
                                         </div>
                                     </div>
-                                    <a href="javascript:_companyReqJoin()"
-                                        class="btn btn-primary btn-user btn-block">
-                                        가입 요청
-                                    </a>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="companyContactNumber"
+                                                name="companyContactNumber" placeholder="대표 연락처(-포함하여 입력)">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <a href="javascript:_companyReqJoin()"
+                                                class="btn btn-primary btn-user btn-block">
+                                                가입 요청
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
                                 </form>
                                 <hr>
                                 <div class="text-center">

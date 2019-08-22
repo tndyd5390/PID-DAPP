@@ -20,17 +20,31 @@
 
   <!-- Custom styles for this page -->
   <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+  <script>
 
+
+    _approveCompanyJoin = companyNo => {
+      $.ajax({
+        type:"PUT",
+        url: "/company/" + companyNo,
+        data: {companyReqStatus: "1"},
+        success: data => {
+          if(data) location.reload();
+          else alert("승인 실패");
+        },
+        error: (xhr, status, error) => {
+          alert("승인 실패");
+        }
+      })
+    }
+  </script>
 </head>
 
 <body id="page-top">
-
   <!-- Page Wrapper -->
   <div id="wrapper">
-
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
@@ -337,40 +351,55 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+              <h6 class="m-0 font-weight-bold text-primary">기업가입 요청 목록</h6>
             </div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Office</th>
-                      <th>Age</th>
-                      <th>Start date</th>
-                      <th>Salary</th>
+                      <th>기업명</th>
+                      <th>대표자 명</th>
+                      <th>사업자등록번호</th>
+                      <th>연락처</th>
+                      <th>주소</th>
+                      <th>가입요청일</th>
+                      <th>가입승인</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Office</th>
-                      <th>Age</th>
-                      <th>Start date</th>
-                      <th>Salary</th>
+                      <th>기업명</th>
+                      <th>대표자 명</th>
+                      <th>사업자등록번호</th>
+                      <th>연락처</th>
+                      <th>주소</th>
+                      <th>가입요청일</th>
+                      <th>가입승인</th>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <tr>
-                      <td>Tiger Nixon</td>
-                      <td>System Architect</td>
-                      <td>Edinburgh</td>
-                      <td>61</td>
-                      <td>2011/04/25</td>
-                      <td>$320,800</td>
-                    </tr>
+                    <%for(var i = 0; i< companyList.length; i++){%>
+                      <tr>
+                        <td><%=companyList[i].COMPANY_NAME%></td>
+                        <td><%=companyList[i].COMPANY_REPRESENTATIVE_NAME%></td>
+                        <td><%=companyList[i].COMPANY_REGISTRATION_NUMBER%></td>
+                        <td><%=companyList[i].COMPANY_CONTACT_NUMBER%></td>
+                        <td><%=companyList[i].COMPANY_ADDRESS + " " + companyList[0].COMPANY_ADDRESS_DETAIL%></td>
+                        <td><%=companyList[i].REG_DATE.substr(0, 10)%></td>
+                        <%if(companyList[i].COMPANY_REQ_STATUS == 1){%>
+                            <td>
+                                <a href="javascript:_approveCompanyJoin(<%=companyList[i].COMPANY_NO%>)" class="btn btn-primary btn-icon-split btn-sm">
+                                    <span class="text">가입승인</span>
+                                </a>
+                            </td>
+                        <%} else {%>
+                            <td>
+                                승인완료
+                            </td>
+                        <%}%>
+                      </tr>
+                    <%}%>
                   </tbody>
                 </table>
               </div>
@@ -438,7 +467,14 @@
   <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
   <!-- Page level custom scripts -->
-  <script src="/js/demo/datatables-demo.js"></script>
+  <script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            order: [[6, "asc"],[5, "desc"]]
+        });
+    });
+
+  </script>
 
 </body>
 
