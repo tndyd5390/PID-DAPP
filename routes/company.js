@@ -25,6 +25,18 @@ router.get("/signup", async(req, res) => {
     res.render("company/signup")
 })
 
+router.get("/:companyNo", async(req, res) => {
+    var {params: {companyNo}} = req;
+    try{
+        var response = await axios.get("http://192.168.109.132:5000/company/" + companyNo);
+        console.log(response.data);
+        res.render("company/companyDetail", {company: response.data});
+    }catch (err) {
+        console.log(err);
+        res.send(null);
+    }
+})
+
 router.post("/", async(req, res) => {
     var {body: {
             companyName, 
@@ -80,15 +92,6 @@ router.get("/checkCompanyId/:companyId", async(req, res) => {
         res.send(true);
     }
 })
-
-// router.get("/signupList", async(req, res) => {
-//     try{
-//         var response = await axios.get("http://192.168.109.132:5000/company/signupList");
-//         res.render("company/signupList", {companyReqList: response.data});
-//     }catch(err){
-//         console.log(err);
-//     }
-// })
 
 router.put("/:companyNo", async(req, res) => {
     var {params: {companyNo}} = req;
