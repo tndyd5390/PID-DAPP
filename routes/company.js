@@ -127,4 +127,16 @@ router.put("/:companyNo", async(req, res) => {
     }
 })
 
+router.post("/checkPassword", async(req,res) => {
+    var {body: {companyNo, password}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password});
+        res.send(response.data);
+    } catch(err) {
+        console.log(err);
+        res.send(false);
+    }
+})
+
+
 module.exports = router;

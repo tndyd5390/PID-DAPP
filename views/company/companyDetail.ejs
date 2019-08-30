@@ -4,7 +4,41 @@
 <head>
     <% include ../includes/head.ejs%>
     <script>
-        
+
+
+
+        _checkPassword = () => {
+            var companyNo = <%=company.companyNo%>;
+            var password = document.getElementById("password");
+            if(typeof password.value == "undefined" || password.value == null || password.value == ""){
+                alert("비밀번호를 입력해주세요.");
+                password.focus();
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "checkPassword",
+                data: {
+                    companyNo,
+                    password: password.value
+                },
+                success: data => {
+                    if(data){
+                        //비밀번호 변경 화면으로 이동
+                    }else{
+                        alert("비밀번호가 틀립니다.");
+                        return;
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.log(error);
+                }   
+            })
+        }
+
+        _updateCompany = () => {
+
+        }
     </script>
 </head>
 
@@ -102,8 +136,63 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">주소</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyAddress + company.companyAddressDetail%></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyAddress + " " + company.companyAddressDetail%></div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API 키</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyApiKey%></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyApiSecret%></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <a class="btn btn-primary btn-user btn-block" href="#" data-toggle="modal" data-target="#checkPassword">
+                                        비밀번호 변경
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <a href="javascript:_updateCompany()"
+                                        class="btn btn-primary btn-user btn-block">
+                                        기업정보 변경
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -112,9 +201,31 @@
             </div>
         </div>
         </div>
-        <!-- /.container-fluid -->
-    </div>
-    <!-- End of Main Content -->
+          <!-- Logout Modal-->
+        <div class="modal fade" id="checkPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">비밀번호를 입력해주세요.</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="user" id="companyReqForm" method="POST" action="/company">
+                            <div class="col-sm-15 mb-3 mb-sm-0">
+                                <input type="password" id="password" class="form-control form-control-user" placeholder="비밀번호 입력">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                        <a class="btn btn-primary" href="javascript:_checkPassword();">확인</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
     <% include ../includes/footer.ejs%>
     </div>
     <!-- End of Content Wrapper -->
