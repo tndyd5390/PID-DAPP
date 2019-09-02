@@ -4,40 +4,17 @@
 <head>
     <% include ../includes/head.ejs%>
     <script>
-
-
-
         _checkPassword = () => {
             var companyNo = <%=company.companyNo%>;
-            var password = document.getElementById("password");
-            if(typeof password.value == "undefined" || password.value == null || password.value == ""){
+            var f = document.getElementById("updatePasswordCheckForm");
+            if(typeof f.password == "undefined" || f.password == null || f.password == ""){
                 alert("비밀번호를 입력해주세요.");
-                password.focus();
+                f.password.focus();
                 return;
             }
-            $.ajax({
-                type: "POST",
-                url: "checkPassword",
-                data: {
-                    companyNo,
-                    password: password.value
-                },
-                success: data => {
-                    if(data){
-                        //비밀번호 변경 화면으로 이동
-                    }else{
-                        alert("비밀번호가 틀립니다.");
-                        return;
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.log(error);
-                }   
-            })
+            f.submit();
         }
-
         _updateCompany = () => {
-
         }
     </script>
 </head>
@@ -212,9 +189,10 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form class="user" id="companyReqForm" method="POST" action="/company">
+                        <form class="user" id="updatePasswordCheckForm" method="POST" action="/company/updatePasswordCheck">
                             <div class="col-sm-15 mb-3 mb-sm-0">
-                                <input type="password" id="password" class="form-control form-control-user" placeholder="비밀번호 입력">
+                                <input type="password" id="password" name="password" class="form-control form-control-user" placeholder="비밀번호 입력">
+                                <input type="hidden" name="companyNo" value="<%=company.companyNo%>"/>
                             </div>
                         </form>
                     </div>

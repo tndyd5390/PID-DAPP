@@ -93,6 +93,16 @@ router.get("/checkCompanyId/:companyId", async(req, res) => {
     }
 })
 
+router.post("/approveCompanyJoin", async(req, res) => {
+    var {body: {companyNo}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/approveCompanyJoin", {companyNo});
+
+    }catch(err) {
+        console.log(err);
+    }
+})
+
 router.put("/:companyNo", async(req, res) => {
     var {params: {companyNo}} = req;
 
@@ -120,23 +130,44 @@ router.put("/:companyNo", async(req, res) => {
 
     try{
         var response = await axios.put("http://192.168.109.132:5000/company/" + companyNo, {companyObj})
-        console.log(response.data);
         res.send(response.data);
     } catch(err) {
         console.log(err);
     }
 })
 
-router.post("/checkPassword", async(req,res) => {
+router.post("/updatePasswordCheck", async(req,res) => {
     var {body: {companyNo, password}} = req;
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password});
-        res.send(response.data);
+        if(response.data){
+            res.render("company/updatePasswordView", {companyNo});
+
+        }else{
+            res.render("redirect", {msg:"비밀번호가 다릅니다.", url:"/"})
+        }
     } catch(err) {
         console.log(err);
-        res.send(false);
+        res.render("redirect", {msg:"에러", url:"/"})
     }
 })
 
+router.post("/updatePasswordProc", async(req, res) => {
+    var {body: {newPassword, companyNo}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/updatePassword", {companyNo, newPassword});
+        var obj = {}
+        if(response.data){
+            obj.msg = "비밀번호가 변경되었습니다.";
+            obj.url = "/";
+        } else {
+            obj.msg = "비밀번호 변경에 실패했습니다.";
+            obj.url = "/";
+        }
+        res.render("redirect", obj);
+    }catch(err) {
+        console.log(err);
+    }
+})
 
 module.exports = router;

@@ -5,18 +5,22 @@
     <% include ../includes/head.ejs%>
     <script>
         _approveCompanyJoin = companyNo => {
-            $.ajax({
-                type:"PUT",
-                url: "/company/" + companyNo,
-                data: {companyReqStatus: "1"},
-                success: data => {
-                if(data) location.reload();
-                else alert("승인 실패");
-                },
-                error: (xhr, status, error) => {
-                alert("승인 실패");
-                }
-            })
+            var f = document.createElement("form");
+            f.setAttribute("charset", "UTF-8");
+            f.setAttribute("method", "Post");
+            f.setAttribute("action", "/company/approveCompanyJoin");
+
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "companyNo");
+            input.setAttribute("value", companyNo);
+
+            f.appendChild(input);
+
+            document.body.appendChild(f);
+
+            f.submit();
+
         }
     </script>
 </head>
