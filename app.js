@@ -5,6 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require("cors");
+var methodOverride = require("method-override");
 //var mariaDB = require('./config/mariaDB');
 
 var indexRouter = require('./routes/index');
@@ -21,6 +22,7 @@ app.set('view engine', 'ejs');
 app.listen(app.get('port'));
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride("_method"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));

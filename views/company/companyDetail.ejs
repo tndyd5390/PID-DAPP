@@ -3,9 +3,14 @@
 
 <head>
     <% include ../includes/head.ejs%>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
+        _strEmpty = (str) => {
+	        if (typeof str == "undefined" || str == null || str == "") return true;
+	        else return false;
+        }
+
         _checkPassword = () => {
-            var companyNo = <%=company.companyNo%>;
             var f = document.getElementById("updatePasswordCheckForm");
             if(typeof f.password == "undefined" || f.password == null || f.password == ""){
                 alert("비밀번호를 입력해주세요.");
@@ -14,7 +19,54 @@
             }
             f.submit();
         }
-        _updateCompany = () => {
+        _checkPasswordForUpdate = () => {
+            var f = document.getElementById("checkPasswordForUpdateForm");
+            if(typeof f.passwordForUpdate == "undefined" || f.passwordForUpdate == null || f.passwordForUpdate == ""){
+                alert("비밀번호를 입력해주세요.");
+                f.passwordForUpdate.focus();
+                return;
+            }
+            f.submit();
+        }
+
+
+
+        _showPasswordUpdateModal = async () => {
+            try{
+                var response = await axios.post("/company/getCompanyReqStatus", {companyNo: <%=company.companyNo%>});
+                if(response.data == 0){
+                    alert("가입승인 후에 비밀번호를 변경할 수 있습니다.");
+                    return;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            $("#checkPassword").modal("show");
+        }
+
+        _showAllUpdateModal = async () => {
+            try{
+                var response = await axios.post("/company/getCompanyReqStatus", {companyNo: <%=company.companyNo%>});
+                if(response.data == 0){
+                    alert("가입승인 후에 기업정보를 변경할 수 있습니다.");
+                    return;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+            $("#checkPasswordForUpdate").modal("show");
+        }
+
+        _hidePasswordUpdateModal = () => {
+            var f = document.getElementById("updatePasswordCheckForm");
+            f.password.value = "";
+            $("#checkPassword").modal("hide");
+        }
+
+        _hideAllUpdateModal = () => {
+            var f = document.getElementById("checkPasswordForUpdateForm");
+            f.passwordForUpdate.value = "";
+            $("#checkPasswordForUpdate").modal("hide");
         }
     </script>
 </head>
@@ -120,6 +172,43 @@
                         </div>
                     </div>
                 </div>
+                <%
+                if(
+                    (typeof company.companyApiKey == "undefined" || company.companyApiKey == null || company.companyApiKey == "") || 
+                    (typeof company.companyApiSecret == "undefined" || company.companyApiSecret == null || company.companyApiSecret == "")
+                ){ 
+                %>
+                <div class="row">
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API 키</div>
+                                        <div class="h7 mb-0 font-weight-bold text-gray-800">API 키는 가입승인 후에 확인하실수 있습니다.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
+                                        <div class="h7 mb-0 font-weight-bold text-gray-800">API Secret는 가입승인 후에 확인하실수 있습니다.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%
+                    } else {
+                %>
                 <div class="row">
                     <!-- Earnings (Monthly) Card Example -->
                     <div class="col-xl-6 col-md-6 mb-4">
@@ -148,13 +237,17 @@
                         </div>
                     </div>
                 </div>
+                <%
+                    }
+                %>
+                
                 <div class="row">
                     <!-- Earnings (Monthly) Card Example -->
                     <div class="col-xl-6 col-md-6 mb-4">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <a class="btn btn-primary btn-user btn-block" href="#" data-toggle="modal" data-target="#checkPassword">
+                                    <a class="btn btn-primary btn-user btn-block" href="javascript:_showPasswordUpdateModal();">
                                         비밀번호 변경
                                     </a>
                                 </div>
@@ -166,8 +259,7 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <a href="javascript:_updateCompany()"
-                                        class="btn btn-primary btn-user btn-block">
+                                    <a href="javascript:_showAllUpdateModal();" class="btn btn-primary btn-user btn-block">
                                         기업정보 변경
                                     </a>
                                 </div>
@@ -197,12 +289,36 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                        <button class="btn btn-secondary" type="button" onclick="_hidePasswordUpdateModal();">취소</button>
                         <a class="btn btn-primary" href="javascript:_checkPassword();">확인</a>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="checkPasswordForUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">비밀번호를 입력해주세요.</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="user" id="checkPasswordForUpdateForm" method="POST" action="/company/updateAllPasswordCheck">
+                                <div class="col-sm-15 mb-3 mb-sm-0">
+                                    <input type="password" id="passwordForUpdate" name="passwordForUpdate" class="form-control form-control-user" placeholder="비밀번호 입력">
+                                    <input type="hidden" name="companyNo" value="<%=company.companyNo%>"/>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" onclick="_hideAllUpdateModal();">취소</button>
+                            <a class="btn btn-primary" href="javascript:_checkPasswordForUpdate();">확인</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     <% include ../includes/footer.ejs%>
     </div>

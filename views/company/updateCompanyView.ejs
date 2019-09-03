@@ -4,6 +4,7 @@
 <head>
     <% include ../includes/head.ejs%>
     <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
     <script type="text/Javascript">  
         function _generateAddress() {
@@ -78,11 +79,6 @@
             })
         }
 
-        _checkPasswordReg = (pwd) => {
-            const pwdReg =/^(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])(?=.*[0-9]).{8,16}$/;
-            return !pwdReg.test(pwd);
-        }
-
         _checkContactNumberReg = (contactNumber) => {
             const reg = /^\d{2,3}-\d{3,4}-\d{4}$/;
             return !reg.test(contactNumber);
@@ -95,6 +91,7 @@
 
         _companyReqJoin = async () => {
             var f = document.getElementById("companyReqForm");
+            console.log(f.companyAddress.value);
             if(_strEmpty(f.companyName.value)){
                 _alertAndFocus("회사명을 입력해주세요.", f.companyName);
                 return;
@@ -120,42 +117,23 @@
                 return;
             }
 
-            if(_strEmpty(f.password.value)) {
-                _alertAndFocus("비빌번호를 입력해주세요.", f.password);
-                return;
-            }
-            
-            if(_strEmpty(f.chkPassword.value)) {
-                _alertAndFocus("비밀번호 확인을 입력해주세요.", f.chkPassword);
-                return;
-            }
             if(_strEmpty(f.companyPostCode.value)) {
                 _alertAndFocus("우편번호를 입력해주세요.", f.companyPostCode);
                 return;
             }
 
-            if(_strEmpty(f.address.value)) {
+            if(_strEmpty(f.companyAddress.value)) {
                 _alertAndFocus("주소를 입력해주세요.", f.address);
                 return;
             }
 
-            if(_strEmpty(f.addressDetail.value)) {
+            if(_strEmpty(f.companyAddressDetail.value)) {
                 _alertAndFocus("상세 주소를 입력해주세요.", f.addressDetail);
                 return;
             }
 
             if(_strEmpty(f.companyContactNumber.value)){
                 _alertAndFocus("연락처를 입력해주세요.", f.companyContactNumber);
-                return;
-            }
-
-            if(f.password.value != f.chkPassword.value){
-                _alertAndFocus("비밀번호가 일치하지 않습니다.", f.chkPassword);
-                return;
-            }
-            
-            if(_checkPasswordReg(f.password.value)){
-                _alertAndFocus("비밀번호는 8자 이상 16자 이하의 알파벳, 숫자, 특수문자의 조합이여야 합니다.", f.password);
                 return;
             }
 
@@ -166,19 +144,28 @@
 
             try{
                 var chkRgiNum = await _checkCompanyRegistrationNumber(f.companyRegistrationNumber.value);
-                if(chkRgiNum != 0){
+                if(Number(chkRgiNum) > 1){
                     _alertAndFocus("이미 가입된 사업자등록번호입니다.", f.companyRegistrationNumber);
                     return;
                 }
                 var chkCompId = await _checkCompanyId(f.companyId.value);
-                if(chkCompId != 0){
+                if(Number(chkCompId) > 1){
                     _alertAndFocus("이미 가입된 아이디입니다.", f.companyId);
                     return;
                 }
             }catch(err) {
                 console.log(err);
             }
-            f.submit();
+            var companyObj = {
+                companyName: f.companyName.value,
+                companyRegistrationNumber: f.companyRegistrationNumber.value,
+                companyRepresentativeName: f.companyRepresentativeName.value,
+                companyContactNumber: f.companyContactNumber.value,
+                companyId: f.companyId.value,
+                companyAddress: f.companyAddress.value,
+                companyAddressDetail: f.companyAddressDetail.value
+            };
+
         }
     </script>
 </head>
@@ -219,40 +206,30 @@
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4">회사 정보 입력</h1>
                                 </div>
-                                <form class="user" id="companyReqForm" method="POST" action="/company">
+                                <form class="user" id="companyReqForm" method="POST" action="/company/updateCompany">
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user"
-                                                id="companyName" name="companyName" placeholder="회사명">
+                                                id="companyName" name="companyName" placeholder="기업 명" value="<%=company.companyName%>">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control form-control-user" id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호(-포함하여 입력)">
+                                            <input type="text" class="form-control form-control-user" id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호" value="<%=company.companyRegistrationNumber%>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="companyRepresentativeName"
-                                                name="companyRepresentativeName" placeholder="대표자 명">
+                                                name="companyRepresentativeName" placeholder="대표자 명" value="<%=company.companyRepresentativeName%>">
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control form-control-user"
-                                                id="companyId" name="companyId" placeholder="아이디">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-6 mb-3 mb-sm-0">
-                                            <input type="password" class="form-control form-control-user" id="password"
-                                                name="password" placeholder="비밀번호">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <input type="password" class="form-control form-control-user"
-                                                id="chkPassword" name="chkPassword" placeholder="비밀번호 확인">
+                                                id="companyId" name="companyId" placeholder="아이디" value="<%=company.companyId%>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="companyPostCode"
-                                                name="companyPostCode" placeholder="우편번호" readonly="readonly">
+                                                name="companyPostCode" placeholder="우편번호" value="<%=company.companyPostcode%>" readonly="readonly">
                                         </div>
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <a href="javascript:_generateAddress()"
@@ -263,23 +240,23 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
-                                            <input type="text" class="form-control form-control-user" id="address"
-                                                name="address" placeholder="주소" readonly="readonly">
+                                            <input type="text" class="form-control form-control-user" id="companyAddress"
+                                                name="companyAddress" placeholder="주소" value="<%=company.companyAddress%>" readonly="readonly">
                                         </div>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control form-control-user"
-                                                id="addressDetail" name="addressDetail" placeholder="상세주소">
+                                                id="companAddressDetail" name="companyAddressDetail" placeholder="상세주소" value="<%=company.companyAddressDetail%>">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-6 mb-3 mb-sm-0">
                                             <input type="text" class="form-control form-control-user" id="companyContactNumber"
-                                                name="companyContactNumber" placeholder="대표 연락처(-포함하여 입력)">
+                                                name="companyContactNumber" placeholder="연락처" value="<%=company.companyContactNumber%>">
                                         </div>
                                         <div class="col-sm-6">
                                             <a href="javascript:_companyReqJoin()"
                                                 class="btn btn-primary btn-user btn-block">
-                                                가입 요청
+                                                수정
                                             </a>
                                         </div>
                                     </div>
