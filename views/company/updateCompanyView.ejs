@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../includes/head.ejs%>
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>
+    <script type="text/Javascript">  
+        function _generateAddress() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    var addr = ''; 
+                    var extraAddr = ''; 
+
+                    if (data.userSelectedType === 'R') { 
+                        addr = data.roadAddress;
+                    } else { 
+                        addr = data.jibunAddress;
+                    }
+                    if(data.userSelectedType === 'R'){
+                        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                            extraAddr += data.bname;
+                        }
+                        if(data.buildingName !== '' && data.apartment === 'Y'){
+                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        }
+                        if(extraAddr !== ''){
+                            extraAddr = ' (' + extraAddr + ')';
+                        }
+                    } else { 
+
+                    }
+
+                    document.getElementById('companyPostCode').value = data.zonecode;
+                    document.getElementById("address").value = addr;
+                    document.getElementById("addressDetail").focus();
+                }
+            }).open();
+        }
+
+        _strEmpty = (str) => {
+	        if (typeof str == "undefined" || str == null || str == "") return true;
+	        else return false;
+        }
+
+        _alertAndFocus = (str, dom) => {
+            alert(str);
+            dom.focus();
+        }
+
+        _checkCompanyRegistrationNumber = (companyRegistrationNumber) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    type: "GET",
+                    url: "/company/checkCompanyRegistrationNumber/" + companyRegistrationNumber,
+                    success: (data) => {
+                        resolve(data);
+                    },
+                    error: (xhr, status, error) => {
+                        reject(error);
+                    }
+                });
+            }) 
+        }
+
+        _checkCompanyId = (companyId) => {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    type: "GET",
+                    url: "/company/checkCompanyId/" + companyId,
+                    success: (data) => {
+                        resolve(data);
+                    },
+                    error: (xhr, status, error) => {
+                        reject(error);
+                    }
+                })
+            })
+        }
+
+        _checkContactNumberReg = (contactNumber) => {
+            const reg = /^\d{2,3}-\d{3,4}-\d{4}$/;
+            return !reg.test(contactNumber);
+        }
+
+        _checkRegistrationNumber = registrationNumber => {
+            const reg = /^\d{3}-\d{2}-\d{5}$/;
+            return !reg.test(registrationNumber);
+        }
+
+        _companyReqJoin = async () => {
+            var f = document.getElementById("companyReqForm");
+            console.log(f.companyAddress.value);
+            if(_strEmpty(f.companyName.value)){
+                _alertAndFocus("회사명을 입력해주세요.", f.companyName);
+                return;
+            } 
+
+            if(_strEmpty(f.companyRegistrationNumber.value)) {
+                _alertAndFocus("사업자등록번호를 입력해주세요.", f.companyRegistrationNumber);
+                return;
+            }
+
+            if(_checkRegistrationNumber(f.companyRegistrationNumber.value)){
+                _alertAndFocus("사업자 등록번호 양식을 확인해주세요. xxx-xx-xxxxx", f.companyRegistrationNumber);
+                return;
+            }
+
+            if(_strEmpty(f.companyRepresentativeName.value)) {
+                _alertAndFocus("대표자 명을 입력해주세요.", f.companyRepresentativeName)
+                return;
+            }
+
+            if(_strEmpty(f.companyId.value)) {
+                _alertAndFocus("아이디를 입력해주세요.", f.companyId);
+                return;
+            }
+
+            if(_strEmpty(f.companyPostCode.value)) {
+                _alertAndFocus("우편번호를 입력해주세요.", f.companyPostCode);
+                return;
+            }
+
+            if(_strEmpty(f.companyAddress.value)) {
+                _alertAndFocus("주소를 입력해주세요.", f.address);
+                return;
+            }
+
+            if(_strEmpty(f.companyAddressDetail.value)) {
+                _alertAndFocus("상세 주소를 입력해주세요.", f.addressDetail);
+                return;
+            }
+
+            if(_strEmpty(f.companyContactNumber.value)){
+                _alertAndFocus("연락처를 입력해주세요.", f.companyContactNumber);
+                return;
+            }
+
+            if(_checkContactNumberReg(f.companyContactNumber.value)){
+                _alertAndFocus("연락처 형식을 확인해 주세요.", f.companyContactNumber);
+                return;
+            }
+
+            try{
+                var chkRgiNum = await _checkCompanyRegistrationNumber(f.companyRegistrationNumber.value);
+                if(Number(chkRgiNum) > 1){
+                    _alertAndFocus("이미 가입된 사업자등록번호입니다.", f.companyRegistrationNumber);
+                    return;
+                }
+                var chkCompId = await _checkCompanyId(f.companyId.value);
+                if(Number(chkCompId) > 1){
+                    _alertAndFocus("이미 가입된 아이디입니다.", f.companyId);
+                    return;
+                }
+            }catch(err) {
+                console.log(err);
+            }
+            var companyObj = {
+                companyName: f.companyName.value,
+                companyRegistrationNumber: f.companyRegistrationNumber.value,
+                companyRepresentativeName: f.companyRepresentativeName.value,
+                companyContactNumber: f.companyContactNumber.value,
+                companyId: f.companyId.value,
+                companyAddress: f.companyAddress.value,
+                companyAddressDetail: f.companyAddressDetail.value
+            };
+
+            try{
+                var response = await axios.put("/company/<%=company.companyNo%>", companyObj);
+                alert(response.data);
+            } catch(err) {
+                alert(err);
+            }
+
+        }
+    </script>
+</head>
+
+<body id="page-top">
+    
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <% include ../includes/sidebar.ejs%>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <% include ../includes/nav.ejs %>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="p-5" style="padding:0px!important">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4">회사 정보 입력</h1>
+                                </div>
+                                <form class="user" id="companyReqForm" method="POST" action="/company/updateCompany">
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user"
+                                                id="companyName" name="companyName" placeholder="기업 명" value="<%=company.companyName%>">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control form-control-user" id="companyRegistrationNumber" name="companyRegistrationNumber" placeholder="사업자등록번호" value="<%=company.companyRegistrationNumber%>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="companyRepresentativeName"
+                                                name="companyRepresentativeName" placeholder="대표자 명" value="<%=company.companyRepresentativeName%>">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control form-control-user"
+                                                id="companyId" name="companyId" placeholder="아이디" value="<%=company.companyId%>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="companyPostCode"
+                                                name="companyPostCode" placeholder="우편번호" value="<%=company.companyPostcode%>" readonly="readonly">
+                                        </div>
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <a href="javascript:_generateAddress()"
+                                                class="btn btn-primary btn-user btn-block">
+                                                우편번호 검색
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="companyAddress"
+                                                name="companyAddress" placeholder="주소" value="<%=company.companyAddress%>" readonly="readonly">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control form-control-user"
+                                                id="companAddressDetail" name="companyAddressDetail" placeholder="상세주소" value="<%=company.companyAddressDetail%>">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6 mb-3 mb-sm-0">
+                                            <input type="text" class="form-control form-control-user" id="companyContactNumber"
+                                                name="companyContactNumber" placeholder="연락처" value="<%=company.companyContactNumber%>">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <a href="javascript:_companyReqJoin()"
+                                                class="btn btn-primary btn-user btn-block">
+                                                수정
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                </form>
+                                <hr>
+                                <div class="text-center">
+                                    <a class="small" href="forgot-password.html">Forgot Password?</a>
+                                </div>
+                                <div class="text-center">
+                                    <a class="small" href="login.html">Already have an account? Login!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <% include ../includes/footer.ejs%>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <% include ../includes/logoutModal.ejs%>
+
+    <!-- Bootstrap core JavaScript-->
+    <% include ../includes/bottomScripts.ejs%>
+
+</body>
+
+</html>

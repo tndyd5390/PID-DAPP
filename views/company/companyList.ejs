@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../includes/head.ejs%>
+    <script>
+        _approveCompanyJoin = companyNo => {
+            var f = document.createElement("form");
+            f.setAttribute("charset", "UTF-8");
+            f.setAttribute("method", "Post");
+            f.setAttribute("action", "/company/approveCompanyJoin");
+
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "companyNo");
+            input.setAttribute("value", companyNo);
+
+            f.appendChild(input);
+
+            document.body.appendChild(f);
+
+            f.submit();
+
+        }
+    </script>
+</head>
+
+<body id="page-top">
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+    <% include ../includes/sidebar.ejs%>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <% include ../includes/nav.ejs %>
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">기업가입 요청 목록</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>기업명</th>
+                      <th>대표자 명</th>
+                      <th>사업자등록번호</th>
+                      <th>연락처</th>
+                      <th>주소</th>
+                      <th>가입요청일</th>
+                      <th>가입승인</th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th>기업명</th>
+                      <th>대표자 명</th>
+                      <th>사업자등록번호</th>
+                      <th>연락처</th>
+                      <th>주소</th>
+                      <th>가입요청일</th>
+                      <th>가입승인</th>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+                    <%for(var i = 0; i< companyList.length; i++){%>
+                      <tr>
+                        <td><%=companyList[i].COMPANY_NAME%></td>
+                        <td><%=companyList[i].COMPANY_REPRESENTATIVE_NAME%></td>
+                        <td><%=companyList[i].COMPANY_REGISTRATION_NUMBER%></td>
+                        <td><%=companyList[i].COMPANY_CONTACT_NUMBER%></td>
+                        <td><%=companyList[i].COMPANY_ADDRESS + " " + companyList[0].COMPANY_ADDRESS_DETAIL%></td>
+                        <td><%=companyList[i].REG_DATE.substr(0, 10)%></td>
+                        <%if(companyList[i].COMPANY_REQ_STATUS == 0){%>
+                            <td>
+                                <a href="javascript:_approveCompanyJoin(<%=companyList[i].COMPANY_NO%>)" class="btn btn-primary btn-icon-split btn-sm">
+                                    <span class="text">가입승인</span>
+                                </a>
+                            </td>
+                        <%} else {%>
+                            <td>
+                                승인완료
+                            </td>
+                        <%}%>
+                      </tr>
+                    <%}%>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+      <% include ../includes/footer.ejs%>
+    </div>
+    <!-- End of Content Wrapper -->
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <% include ../includes/logoutModal.ejs%>
+
+  <% include ../includes/bottomScripts.ejs%>
+
+  <!-- Page level custom scripts -->
+  <script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            order: [[6, "asc"],[5, "desc"]]
+        });
+    });
+
+  </script>
+
+</body>
+
+</html>
