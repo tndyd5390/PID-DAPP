@@ -25,19 +25,19 @@
 
         _login = () => {
             var f = $('#f');
-            var id = $('#id');
+            var email = $('#email');
             var password = $('#password');
 
-            if(id.val()==null || id.val()==''){
-                alert("아이디를 입력하세요");
-                id.focus();
+            if(email.val()==null || email.val()==''){
+                alert("이메일을 입력하세요");
+                email.focus();
                 return;
             }else if(password.val()==null || password.val()==''){
                 alert("비밀번호를 입력하세요");
                 password.focus();
                 return;
             }else{
-                f.submit();   
+                f.submit(); 
             }
         };
     </script>
@@ -64,10 +64,10 @@
                   </div>
                   <form class="user" id="f" method="post" action="/fabric/loginProc">
                     <div class="form-group">
-                      <input type="text" class="form-control form-control-user" id="id" aria-describedby="emailHelp" placeholder="ID">
+                      <input type="text" class="form-control form-control-user" id="email" name="email" aria-describedby="emailHelp" placeholder="E-Mail">
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="password" placeholder="Password">
+                      <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password">
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
@@ -78,6 +78,7 @@
                     <a href="javascript:_login();" class="btn btn-primary btn-user btn-block">
                       Login
                     </a>
+                    </form>
                     <hr>
                     <div class="text-center">
                     <a class="small" href="/register">Create an Account!</a>

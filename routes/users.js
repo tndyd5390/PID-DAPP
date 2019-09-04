@@ -28,7 +28,6 @@ router.get('/', function(req, res, next) {
 
 router.post('/emailChk', async(req, res)=>{
     var {body : {email}} = req;
-    console.log(email);
     var result = await _emailChk(email);
 
     res.send(result);

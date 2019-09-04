@@ -19,10 +19,31 @@ _registerUser = async(email, password,affiliation) =>{
     }).then((response)=> response.json())
     .then((res => {
         return res;
-    }))
+    }));
 
     return result;
 };
+
+_loginProc = async(email, password)=>{
+    const params = {
+        email : email,
+        password : password
+    };
+    var result = await fetch('http://192.168.40.129:3000/users/loginProc', {
+        method : 'post',
+        headers : {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body : JSON.stringify(params)
+    }).then((response)=>response.json()).
+    then((res=>{
+        console.log(res);
+        return res;
+    }));
+
+    return result;
+}
 
 router.post('/createUser', async(req, res, next)=>{
     var {body : {email, password}} = req;
@@ -34,14 +55,16 @@ router.post('/createUser', async(req, res, next)=>{
 
 router.post('/loginProc', async(req, res)=>{
     var session = req.session;
-    var {body : {id, password}} = req;
-    var result = await registerUser.registerUser(id, password);
+    var {body : {email, password}} = req;
+    var result = await _loginProc(email, password);
+    if(result.COUNT == 1){
+        var erollUser = await registerUser.registerUser(email, result.SECRET);
+        session.email = email;
+        session.auth = result.AUTH
+        res.redirect('/');
 
-    if(result==0){
-        res.render('redirect', {msg : '로그인 정보를 확인해주세요.', url:'/login'})
     }else{
-        session.id = id;
-        res.redirect('/index');
+        res.render('redirect', {msg : '로그인 정보를 확인해주세요.', url:'/login'})
     }
 });
 

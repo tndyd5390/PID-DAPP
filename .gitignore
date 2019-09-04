@@ -1,4 +1,4 @@
-
 node_modules
 npm-debug.log
 packeage-lock.json
+fabricSDK/hfc-key-store/*

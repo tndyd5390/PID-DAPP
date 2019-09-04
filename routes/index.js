@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     var session = req.session;
     console.log(session);
-    if(session==null || session==''){
+    if(session.email==null || session.email==''){
         res.render('redirect', {msg : '로그인 정보를 확인해주세요.', url:'/login'})
     }else{
         res.render('index', { title: 'Express' });
