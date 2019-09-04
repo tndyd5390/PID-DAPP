@@ -166,6 +166,13 @@
                 companyAddressDetail: f.companyAddressDetail.value
             };
 
+            try{
+                var response = await axios.put("/company/<%=company.companyNo%>", companyObj);
+                alert(response.data);
+            } catch(err) {
+                alert(err);
+            }
+
         }
     </script>
 </head>

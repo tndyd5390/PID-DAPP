@@ -106,38 +106,38 @@ router.post("/approveCompanyJoin", async(req, res) => {
     }
 })
 
-// router.put("/:companyNo", async(req, res) => {
-//     var {params: {companyNo}} = req;
+router.put("/:companyNo", async(req, res) => {
+    var {params: {companyNo}} = req;
 
-//     var {body: {
-//         companyName,
-//         companyRegistrationNumber,
-//         companyRepresentativeName,
-//         companyContactNumber,
-//         companyId,
-//         companyAddress,
-//         companyAddressDetail,
-//         companyReqStatus
-//     }} = req;
+    var {body: {
+        companyName,
+        companyRegistrationNumber,
+        companyRepresentativeName,
+        companyContactNumber,
+        companyId,
+        companyAddress,
+        companyAddressDetail,
+        companyReqStatus
+    }} = req;
 
-//     var companyObj = {
-//         companyName,
-//         companyRegistrationNumber,
-//         companyRepresentativeName,
-//         companyContactNumber,
-//         companyId,
-//         companyAddress,
-//         companyAddressDetail,
-//         companyReqStatus
-//     };
+    var companyObj = {
+        companyName,
+        companyRegistrationNumber,
+        companyRepresentativeName,
+        companyContactNumber,
+        companyId,
+        companyAddress,
+        companyAddressDetail,
+        companyReqStatus
+    };
     
-//     try{
-//         var response = await axios.put("http://192.168.109.132:5000/company/" + companyNo, {companyObj})
-//         res.send(response.data);
-//     } catch(err) {
-//         console.log(err);
-//     }
-// })
+    try{
+        var response = await axios.put("http://192.168.109.132:5000/company/" + companyNo, {companyObj})
+        res.send(response.data);
+    } catch(err) {
+        console.log(err);
+    }
+})
 
 router.post("/updatePasswordCheck", async(req,res) => {
     var {body: {companyNo, password}} = req;
