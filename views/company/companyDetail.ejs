@@ -172,13 +172,25 @@
                         </div>
                     </div>
                 </div>
-                <%
-                if(
-                    (typeof company.companyApiKey == "undefined" || company.companyApiKey == null || company.companyApiKey == "") || 
-                    (typeof company.companyApiSecret == "undefined" || company.companyApiSecret == null || company.companyApiSecret == "")
-                ){ 
-                %>
                 <div class="row">
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-6 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">연락처</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyContactNumber%></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%
+                    if(
+                        company.companyReqStatus == "0"
+                    ){ 
+                    %>
                     <!-- Earnings (Monthly) Card Example -->
                     <div class="col-xl-6 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
@@ -186,30 +198,16 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API 키</div>
-                                        <div class="h7 mb-0 font-weight-bold text-gray-800">API 키는 가입승인 후에 확인하실수 있습니다.</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">가입승인 후에 확인할 수 있습니다.</div>
+                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-6 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
-                                        <div class="h7 mb-0 font-weight-bold text-gray-800">API Secret는 가입승인 후에 확인하실수 있습니다.</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <%
-                    } else {
-                %>
-                <div class="row">
+                    <%
+                        } else {
+                    %>
                     <!-- Earnings (Monthly) Card Example -->
                     <div class="col-xl-6 col-md-6 mb-4">
                         <div class="card border-left-primary shadow h-100 py-2">
@@ -223,15 +221,37 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-6 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyApiSecret%></div>
-                                    </div>
+                    <%
+                        }
+                    %>
+                </div>
+                <%
+                if(
+                    company.companyReqStatus == "0"
+                ){ 
+                %>
+                <div class="col-xl-12 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">가입승인 후에 확인할 수 있습니다.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <%
+                    } else {
+                %>
+                <div class="col-xl-12 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">API Secret</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%=company.companyApiSecret%></div>
                                 </div>
                             </div>
                         </div>
@@ -240,7 +260,6 @@
                 <%
                     }
                 %>
-                
                 <div class="row">
                     <!-- Earnings (Monthly) Card Example -->
                     <div class="col-xl-6 col-md-6 mb-4">

@@ -12,7 +12,25 @@ _strIsEmpty = (str) => {
 	else return false;
 }
 
+_loginCheck = (req, res) => {
+    var sess = req.session;
+    if( 
+        _strIsEmpty(_nvl(sess.companyNo)) && 
+        _strIsEmpty(_nvl(sess.companyName)) &&
+        _strIsEmpty(_nvl(sess.companyId))
+    ){
+        res.render("redirect", {msg: "로그인이 필요합니다.", url: "/company/login"});
+    }
+}
+
+sessionDestory = req => {
+    return new Promise((resolve, reject) => {
+        resolve(req.session.destory(err => {}))
+    })
+}
+
 router.get("/", async(req, res) => {
+    _loginCheck(req, res);
     try{
         var response = await axios.get("http://192.168.109.132:5000/company");
         res.render("company/companyList", {companyList: response.data});
@@ -25,8 +43,25 @@ router.get("/signup", async(req, res) => {
     res.render("company/signup")
 })
 
+router.get("/login", async(req, res) => {
+    var sess = req.session;
+    if( 
+        !_strIsEmpty(_nvl(sess.companyNo)) && 
+        !_strIsEmpty(_nvl(sess.companyName)) &&
+        !_strIsEmpty(_nvl(sess.companyId))
+    ){
+        res.redirect("/company/" + sess.companyNo);
+    }
+    res.render("company/companyLogin")
+})
+
 router.get("/:companyNo", async(req, res) => {
+    _loginCheck(req, res);
     var {params: {companyNo}} = req;
+    var sess = req.session;
+    if(sess.companyNo != companyNo){
+        res.redirect("/");
+    }
     try{
         var response = await axios.get("http://192.168.109.132:5000/company/" + companyNo);
         res.render("company/companyDetail", {company: response.data});
@@ -107,6 +142,7 @@ router.post("/approveCompanyJoin", async(req, res) => {
 })
 
 router.put("/:companyNo", async(req, res) => {
+    _loginCheck(req, res);
     var {params: {companyNo}} = req;
 
     var {body: {
@@ -130,7 +166,7 @@ router.put("/:companyNo", async(req, res) => {
         companyAddressDetail,
         companyReqStatus
     };
-    
+
     try{
         var response = await axios.put("http://192.168.109.132:5000/company/" + companyNo, {companyObj})
         res.send(response.data);
@@ -140,6 +176,7 @@ router.put("/:companyNo", async(req, res) => {
 })
 
 router.post("/updatePasswordCheck", async(req,res) => {
+    _loginCheck(req, res);
     var {body: {companyNo, password}} = req;
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password});
@@ -156,6 +193,7 @@ router.post("/updatePasswordCheck", async(req,res) => {
 })
 
 router.post("/updatePasswordProc", async(req, res) => {
+    _loginCheck(req, res);
     var {body: {newPassword, companyNo}} = req;
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/updatePassword", {companyNo, newPassword});
@@ -174,9 +212,8 @@ router.post("/updatePasswordProc", async(req, res) => {
 })
 
 router.post("/updateAllPasswordCheck", async(req, res) => {
+    _loginCheck(req, res);
     var {body: {companyNo, passwordForUpdate}} = req;
-    console.log(companyNo);
-    console.log(passwordForUpdate);
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password: passwordForUpdate});
         if(response.data){
@@ -187,7 +224,6 @@ router.post("/updateAllPasswordCheck", async(req, res) => {
             res.render("redirect", {msg:"비밀번호가 다릅니다.", url:"/"})
         }
     } catch(err) {
-        console.log(err);
         res.render("redirect", {msg:"에러", url:"/"})
     }
 })
@@ -202,4 +238,22 @@ router.post("/getCompanyReqStatus", async(req, res) => {
     }
 })
 
+router.post("/loginProc", async(req, res) => {
+    var {body: {id, password}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/loginProc", {id, password});
+        console.log(response.data);
+        if(response.data){
+            var session = req.session;
+            session.companyId = id;
+            session.companyNo = response.data.companyNo;
+            session.companyName = response.data.companyName;
+            res.redirect("/company/" + response.data.companyNo);
+        }else{
+            res.render("redirect", {url: "/company/login", msg: "아이디와 비밀번호가 일치하지 않습니다."})
+        }
+    } catch(err) {
+        console.log(err);
+    }
+})
 module.exports = router;
