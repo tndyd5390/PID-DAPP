@@ -23,14 +23,22 @@ _loginCheck = (req, res) => {
     }
 }
 
-sessionDestory = req => {
-    return new Promise((resolve, reject) => {
-        resolve(req.session.destory(err => {}))
-    })
+destoryCompanySession = (req) => {
+    req.session.companyId = null;
+    req.session.companyNo = null;
+    req.session.companyName = null;
 }
 
 router.get("/", async(req, res) => {
-    _loginCheck(req, res);
+    var session = req.session;
+    console.log(session.companyId);
+    if(session.companyId != "companyAdmin"){
+        console.log("true");
+        destoryCompanySession(req);
+        res.render("redirect", {msg: "관리자만 접근할 수 있습니다.", url: "/company/login"});
+        return;
+    }
+
     try{
         var response = await axios.get("http://192.168.109.132:5000/company");
         res.render("company/companyList", {companyList: response.data});
@@ -242,12 +250,14 @@ router.post("/loginProc", async(req, res) => {
     var {body: {id, password}} = req;
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/loginProc", {id, password});
-        console.log(response.data);
         if(response.data){
             var session = req.session;
-            session.companyId = id;
+            session.companyId = response.data.companyId;
             session.companyNo = response.data.companyNo;
             session.companyName = response.data.companyName;
+            if(id == "companyAdmin") {
+                res.redirect("/company");
+            }
             res.redirect("/company/" + response.data.companyNo);
         }else{
             res.render("redirect", {url: "/company/login", msg: "아이디와 비밀번호가 일치하지 않습니다."})
