@@ -209,6 +209,9 @@ router.post("/updatePasswordProc", async(req, res) => {
         if(response.data){
             obj.msg = "비밀번호가 변경되었습니다.";
             obj.url = "/";
+            req.session.destroy(function(err){
+                //destory session
+            });
         } else {
             obj.msg = "비밀번호 변경에 실패했습니다.";
             obj.url = "/";
@@ -263,6 +266,41 @@ router.post("/loginProc", async(req, res) => {
             res.render("redirect", {url: "/company/login", msg: "아이디와 비밀번호가 일치하지 않습니다."})
         }
     } catch(err) {
+        console.log(err);
+    }
+})
+
+router.post("/getToken", async(req, res) => {
+    const {body: {API_KEY, API_SECRET}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/getToken",{API_KEY, API_SECRET});
+        if(response.data){
+            res.send(response.data);
+        }else{
+            res.send("unauthorization");
+        }
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+router.post("/verifyToken", async(req, res) => {
+    const {body: {token}} = req;
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/verifyToken", {token});
+        res.send(response.data);
+    }catch(err) {
+        console.log(err);
+    }
+})
+
+router.post("/getPersonalInfoByIdentifier", async(req, res) => {
+    const {body: {identifier}} = req;
+    var token = req.get("authorization");
+    try{
+        var response = await axios.post("http://192.168.109.132:5000/company/getPersonalInfoByIdentifier", {headers: {"Authorization" : `${token}`}, identifier});
+        res.send(response.data);
+    }catch(err){
         console.log(err);
     }
 })

@@ -20,4 +20,11 @@ router.get('/register', (req, res)=>{
     res.render('register');
 })
 
+router.get("/logout", async (req, res) => {
+    req.session.destroy(function(err) {
+        // cannot access session here
+    });
+    res.redirect("/");
+})
+
 module.exports = router;
