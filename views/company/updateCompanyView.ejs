@@ -168,7 +168,13 @@
 
             try{
                 var response = await axios.put("/company/<%=company.companyNo%>", companyObj);
-                alert(response.data);
+                if(response.data){
+                    alert("수정이 완료되었습니다.");
+                    location.href="/company/<%=company.companyNo%>";
+                }else{
+                    alert("수정에 실패했습니다.");
+                    location.href="/"
+                }
             } catch(err) {
                 alert(err);
             }

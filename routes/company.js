@@ -286,6 +286,7 @@ router.post("/getToken", async(req, res) => {
 
 router.post("/verifyToken", async(req, res) => {
     const {body: {token}} = req;
+    console.log(token);
     try{
         var response = await axios.post("http://192.168.109.132:5000/company/verifyToken", {token});
         res.send(response.data);
@@ -297,8 +298,19 @@ router.post("/verifyToken", async(req, res) => {
 router.post("/getPersonalInfoByIdentifier", async(req, res) => {
     const {body: {identifier}} = req;
     var token = req.get("authorization");
+
+    var headerConfig = {
+        headers: {
+            authorization: token
+        }
+    }
+
+    var data = {
+        identifier
+    }
+
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/getPersonalInfoByIdentifier", {headers: {"Authorization" : `${token}`}, identifier});
+        var response = await axios.post("http://192.168.109.132:5000/company/getPersonalInfoByIdentifier", data, headerConfig);
         res.send(response.data);
     }catch(err){
         console.log(err);
