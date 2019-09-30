@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
 const axios = require("axios");
+const IP = require("./const");
+
+const {SERVER_IP} = IP;
 
 _nvl = (str) => {
     return str || "";
@@ -31,7 +34,6 @@ destoryCompanySession = (req) => {
 
 router.get("/", async(req, res) => {
     var session = req.session;
-    console.log(session.companyId);
     if(session.companyId != "companyAdmin"){
         console.log("true");
         destoryCompanySession(req);
@@ -40,7 +42,7 @@ router.get("/", async(req, res) => {
     }
 
     try{
-        var response = await axios.get("http://192.168.109.132:5000/company");
+        var response = await axios.get(`${SERVER_IP}/company`);
         res.render("company/companyList", {companyList: response.data});
     }catch(err){
         console.log(err);
@@ -71,7 +73,7 @@ router.get("/:companyNo", async(req, res) => {
         res.redirect("/");
     }
     try{
-        var response = await axios.get("http://192.168.109.132:5000/company/" + companyNo);
+        var response = await axios.get(`${SERVER_IP}/company/` + companyNo);
         res.render("company/companyDetail", {company: response.data});
     }catch (err) {
         console.log(err);
@@ -94,7 +96,7 @@ router.post("/", async(req, res) => {
     } = req;
     
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company", {
+        var response = await axios.post(`${SERVER_IP}/company`, {
             companyName, 
             companyRegistrationNumber,
             companyRepresentativeName,
@@ -116,7 +118,7 @@ router.post("/", async(req, res) => {
 router.get("/checkCompanyRegistrationNumber/:registrationNumber", async(req, res) => {
     var {params:{registrationNumber}} = req;
     try{
-        var response = await axios.get("http://192.168.109.132:5000/company/checkCompanyRegistrationNumber/" + registrationNumber);
+        var response = await axios.get(`${SERVER_IP}/company/checkCompanyRegistrationNumber/` + registrationNumber);
         res.send(String(response.data));
     }catch(err){
         console.log(err);
@@ -127,7 +129,7 @@ router.get("/checkCompanyRegistrationNumber/:registrationNumber", async(req, res
 router.get("/checkCompanyId/:companyId", async(req, res) => {
     var {params: {companyId}} = req;
     try {
-        var response = await axios.get("http://192.168.109.132:5000/company/checkCompanyId/" + companyId);
+        var response = await axios.get(`${SERVER_IP}/company/checkCompanyId/` + companyId);
         res.send(String(response.data));
     } catch(err) {
         console.log(err);
@@ -138,7 +140,7 @@ router.get("/checkCompanyId/:companyId", async(req, res) => {
 router.post("/approveCompanyJoin", async(req, res) => {
     var {body: {companyNo}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/approveCompanyJoin", {companyNo});
+        var response = await axios.post(`${SERVER_IP}/company/approveCompanyJoin`, {companyNo});
         if(response.data){
             res.render("redirect", {msg:"승인완료", url:"/company"})
         } else {
@@ -176,7 +178,7 @@ router.put("/:companyNo", async(req, res) => {
     };
 
     try{
-        var response = await axios.put("http://192.168.109.132:5000/company/" + companyNo, {companyObj})
+        var response = await axios.put(`${SERVER_IP}/company/` + companyNo, {companyObj})
         res.send(response.data);
     } catch(err) {
         console.log(err);
@@ -187,7 +189,7 @@ router.post("/updatePasswordCheck", async(req,res) => {
     _loginCheck(req, res);
     var {body: {companyNo, password}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password});
+        var response = await axios.post(`${SERVER_IP}/company/checkPassword`, {companyNo, password});
         if(response.data){
             res.render("company/updatePasswordView", {companyNo});
 
@@ -204,7 +206,7 @@ router.post("/updatePasswordProc", async(req, res) => {
     _loginCheck(req, res);
     var {body: {newPassword, companyNo}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/updatePassword", {companyNo, newPassword});
+        var response = await axios.post(`${SERVER_IP}/company/updatePassword`, {companyNo, newPassword});
         var obj = {}
         if(response.data){
             obj.msg = "비밀번호가 변경되었습니다.";
@@ -226,9 +228,9 @@ router.post("/updateAllPasswordCheck", async(req, res) => {
     _loginCheck(req, res);
     var {body: {companyNo, passwordForUpdate}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/checkPassword", {companyNo, password: passwordForUpdate});
+        var response = await axios.post(`${SERVER_IP}/company/checkPassword`, {companyNo, password: passwordForUpdate});
         if(response.data){
-            var companyObj = await axios.get("http://192.168.109.132:5000/company/" + companyNo)
+            var companyObj = await axios.get(`${SERVER_IP}/company/` + companyNo)
             
             res.render("company/updateCompanyView", {company:companyObj.data});
         }else{
@@ -242,7 +244,7 @@ router.post("/updateAllPasswordCheck", async(req, res) => {
 router.post("/getCompanyReqStatus", async(req, res) => {
     var {body: {companyNo}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/getCompanyReqStatus", {companyNo});
+        var response = await axios.post(`${SERVER_IP}/company/getCompanyReqStatus`, {companyNo});
         res.send(String(response.data));
     }catch(err){
         console.log(err);
@@ -252,7 +254,7 @@ router.post("/getCompanyReqStatus", async(req, res) => {
 router.post("/loginProc", async(req, res) => {
     var {body: {id, password}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/loginProc", {id, password});
+        var response = await axios.post(`${SERVER_IP}/company/loginProc`, {id, password});
         if(response.data){
             var session = req.session;
             session.companyId = response.data.companyId;
@@ -273,7 +275,7 @@ router.post("/loginProc", async(req, res) => {
 router.post("/getToken", async(req, res) => {
     const {body: {API_KEY, API_SECRET}} = req;
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/getToken",{API_KEY, API_SECRET});
+        var response = await axios.post(`${SERVER_IP}/company/getToken`,{API_KEY, API_SECRET});
         if(response.data){
             res.send(response.data);
         }else{
@@ -288,7 +290,7 @@ router.post("/verifyToken", async(req, res) => {
     const {body: {token}} = req;
     console.log(token);
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/verifyToken", {token});
+        var response = await axios.post(`${SERVER_IP}/company/verifyToken`, {token});
         res.send(response.data);
     }catch(err) {
         console.log(err);
@@ -310,7 +312,7 @@ router.post("/getPersonalInfoByIdentifier", async(req, res) => {
     }
 
     try{
-        var response = await axios.post("http://192.168.109.132:5000/company/getPersonalInfoByIdentifier", data, headerConfig);
+        var response = await axios.post(`${SERVER_IP}/company/getPersonalInfoByIdentifier`, data, headerConfig);
         res.send(response.data);
     }catch(err){
         console.log(err);
