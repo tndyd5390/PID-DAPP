@@ -11640,8 +11640,14 @@ a:focus {
   }
 }
 
+/*.bg-login-image {
+  background: url("public/img/mainImage.jpg");
+  background-position: center;d
+  background-size: cover;
+}*/
+
 .bg-login-image {
-  background: url("https://source.unsplash.com/K4mSJ7kc0As/600x800");
+  background: url("../img/mainImage.jpg");
   background-position: center;
   background-size: cover;
 }
