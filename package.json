@@ -16,7 +16,7 @@
     "express-session": "^1.16.2",
     "fabric-ca-client": "^1.4.4",
     "fabric-client": "^1.4.4",
-    "grpc": "^1.22.2",
+    "grpc": "^1.24.9",
     "http-errors": "~1.6.3",
     "method-override": "^3.0.0",
     "morgan": "~1.9.1",
